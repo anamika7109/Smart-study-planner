@@ -614,8 +614,8 @@ app.post("/api/ai", requireAuth, async (req, res) => {
           },
         ],
         generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 2000,
+          temperature: 0.4,
+          maxOutputTokens: 1400,
         },
       }),
     });
