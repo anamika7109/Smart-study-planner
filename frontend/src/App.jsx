@@ -1319,6 +1319,26 @@ body { font-size: 15px; line-height: 1.6; }
   font-size: 13px;
   font-weight: 600;
 }
+.welcome .backend-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 16px;
+  padding: 10px 13px;
+  border: 1px solid rgba(202, 190, 255, .18);
+  border-radius: 99px;
+  background: rgba(22, 22, 36, .72);
+  color: #d7d8e3;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease;
+}
+.welcome .backend-status:hover { border-color: rgba(var(--theme-rgb), .5); background: rgba(var(--theme-rgb), .08); }
+.welcome .backend-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #fbbf24; }
+.welcome .backend-status.ready .backend-status-dot { background: #34d399; box-shadow: 0 0 10px rgba(52, 211, 153, .55); }
+.welcome .backend-status.ai-unconfigured .backend-status-dot { background: #fbbf24; }
+.welcome .backend-status.offline .backend-status-dot { background: #fb7185; }
 .welcome .welcome-footer { color: #a7aaba; font-size: 12px; }
 .welcome .welcome-footer span:last-child { color: #c4c7d4; }
 .welcome-preview .preview-brand { color: #fbfaff; font-size: 14px; }
@@ -1498,6 +1518,42 @@ function Layout({ children, page, navigate, dark, setDark, syncStatus, retrySync
 
 function Welcome({ onLogin, onRegister, theme, setTheme }) {
   const [preview, setPreview] = useState(0);
+  const [backendStatus, setBackendStatus] = useState("checking");
+  const loadBackendStatus = useCallback(async () => {
+    const response = await fetch("/api/health", {
+      cache: "no-store",
+      signal: AbortSignal.timeout(8000),
+    });
+    const health = await response.json();
+    if (!response.ok || !health.success || health.database !== "connected") {
+      throw new Error("StudyFlow backend is unavailable.");
+    }
+    return health.aiConfigured ? "ready" : "ai-unconfigured";
+  }, []);
+
+  const checkBackend = async () => {
+    setBackendStatus("checking");
+    try {
+      setBackendStatus(await loadBackendStatus());
+    } catch {
+      setBackendStatus("offline");
+    }
+  };
+
+  useEffect(() => {
+    let active = true;
+    loadBackendStatus()
+      .then((status) => {
+        if (active) setBackendStatus(status);
+      })
+      .catch(() => {
+        if (active) setBackendStatus("offline");
+      });
+    return () => {
+      active = false;
+    };
+  }, [loadBackendStatus]);
+
   const previews = [
     {
       label: "This week",
@@ -1558,6 +1614,21 @@ function Welcome({ onLogin, onRegister, theme, setTheme }) {
             <span className="pill">◷ Focus sessions</span>
             <span className="pill">▤ Notes & flashcards</span>
           </div>
+          <button
+            className={`backend-status ${backendStatus}`}
+            type="button"
+            onClick={checkBackend}
+            aria-live="polite"
+          >
+            <span className="backend-status-dot" aria-hidden="true" />
+            {backendStatus === "checking"
+              ? "Checking backend…"
+              : backendStatus === "ready"
+              ? "Backend and AI are ready"
+              : backendStatus === "ai-unconfigured"
+              ? "Backend connected · AI setup needed"
+              : "Backend unavailable · Tap to retry"}
+          </button>
         </section>
 
         <section className="welcome-preview" aria-label="Interactive StudyFlow planner preview">

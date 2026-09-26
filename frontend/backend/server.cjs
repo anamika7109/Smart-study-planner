@@ -488,6 +488,7 @@ app.get("/api/health", (req, res) => {
   return res.status(databaseReady ? 200 : 503).json({
     success: databaseReady,
     database: databaseReady ? "connected" : "unavailable",
+    aiConfigured: Boolean(GEMINI_API_KEY),
   });
 });
 app.all("/api/auth/{*path}", (req, res) => {
@@ -568,21 +569,6 @@ ${prompt.trim()}
 Answer the student's question naturally and specifically.
 `;
 };
-
-// --------------------------------------------------
-// Health Check Endpoint
-// --------------------------------------------------
-
-app.get("/api/health", (req, res) => {
-  res.json({
-    success: true,
-    message: "StudyFlow AI server is running",
-    aiConfigured: Boolean(GEMINI_API_KEY),
-    authMode: "private-browser",
-    mongoConfigured: Boolean(MONGODB_URI),
-    mongoConnected: mongoose.connection.readyState === 1,
-  });
-});
 
 // --------------------------------------------------
 // Main AI Chat Endpoint
