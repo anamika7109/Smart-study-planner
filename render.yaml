@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     region: singapore
-    buildCommand: npm install --prefix frontend && npm ci --prefix frontend/backend && npm run build --prefix frontend -- --outDir ../dist
+    buildCommand: npm install --prefix frontend --include=dev && npm ci --prefix frontend/backend && npm run build --prefix frontend -- --outDir ../dist
     startCommand: npm --prefix frontend/backend start
     healthCheckPath: /api/health
     envVars:
