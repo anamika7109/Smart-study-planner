@@ -179,6 +179,19 @@ function getTodayKey() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function getIndiaTimeGreeting() {
+  const hour = Number(new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    hourCycle: "h23",
+    timeZone: "Asia/Kolkata",
+  }).format(new Date()));
+
+  if (hour >= 5 && hour < 12) return "Good morning";
+  if (hour >= 12 && hour < 17) return "Good afternoon";
+  if (hour >= 17 && hour < 21) return "Good evening";
+  return "Good night";
+}
+
 function getLocalDateKey(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -458,24 +471,55 @@ button, input, select, textarea { font-family: inherit; }
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(ellipse at 73% 5%, rgba(116, 82, 210, .13), transparent 32rem),
-    radial-gradient(ellipse at 4% 72%, rgba(33, 125, 124, .08), transparent 28rem),
-    #090b12;
+    radial-gradient(ellipse at 18% 12%, rgba(76, 79, 185, .2), transparent 34rem),
+    radial-gradient(ellipse at 84% 24%, rgba(var(--theme-rgb), .18), transparent 31rem),
+    radial-gradient(ellipse at 40% 88%, rgba(35, 139, 159, .14), transparent 38rem),
+    linear-gradient(135deg, #070914, #0c1020 52%, #080a14);
 }
 .sf-app.theme-violet, .sf-app.theme-ocean, .sf-app.theme-rose, .sf-app.theme-amber {
   background:
-    radial-gradient(ellipse at 80% 5%, var(--theme-glow), transparent 34rem),
-    radial-gradient(ellipse at 5% 75%, rgba(var(--theme-rgb), .055), transparent 30rem),
-    #090b12;
+    radial-gradient(ellipse at 18% 12%, rgba(76, 79, 185, .2), transparent 34rem),
+    radial-gradient(ellipse at 84% 24%, var(--theme-glow), transparent 31rem),
+    radial-gradient(ellipse at 40% 88%, rgba(35, 139, 159, .14), transparent 38rem),
+    linear-gradient(135deg, #070914, #0c1020 52%, #080a14);
 }
 .sf-app > .welcome-atmosphere { position: fixed; z-index: 0; }
+.sf-app .background-transition {
+  position: absolute;
+  z-index: 0;
+  inset: -8%;
+  background:
+    radial-gradient(ellipse at 22% 28%, rgba(var(--theme-rgb), .32), transparent 38%),
+    radial-gradient(ellipse at 76% 68%, rgba(45, 197, 201, .22), transparent 42%),
+    linear-gradient(112deg, transparent 34%, rgba(var(--theme-rgb), .12) 50%, transparent 66%);
+  filter: blur(14px);
+  pointer-events: none;
+  animation: background-enter 1.25s cubic-bezier(.2,.75,.25,1) both;
+}
+.sf-app.light { --background-glow-opacity: .42; }
 .sf-app > .topbar { position: sticky; z-index: 50; }
 .sf-app > .shell { position: relative; z-index: 1; }
 .sf-app .welcome-atmosphere-orbit { right: -260px; }
-.sf-app .welcome-star-orbit { left: 78%; width: min(70vw, 900px); opacity: .56; }
-.sf-app .welcome-atmosphere-glow { top: 13%; right: 8%; width: min(25vw, 330px); opacity: .58; }
-.sf-app .welcome-atmosphere::before { opacity: .26; }
+.sf-app .welcome-star-orbit { left: 78%; width: min(76vw, 980px); opacity: .76; }
+.sf-app .welcome-atmosphere-glow { top: 13%; right: 8%; width: min(32vw, 440px); opacity: .78; }
+.sf-app .welcome-atmosphere::before { opacity: .72; }
 .sf-app .welcome-atmosphere::after { opacity: .7; }
+.sf-app .space-planet { top: 20%; right: 17%; width: min(20vw, 240px); opacity: .22; }
+.sf-app .welcome-atmosphere-orbit { right: -180px; width: min(74vw, 920px); }
+.sf-app .welcome-star-orbit { opacity: .62; }
+.sf-app .topbar { background: rgba(8, 10, 19, .74); backdrop-filter: blur(24px); }
+.sf-app .sidebar { background: rgba(8, 10, 19, .48); backdrop-filter: blur(16px); }
+.sf-app.light {
+  background:
+    radial-gradient(ellipse at 18% 12%, rgba(113, 126, 219, .2), transparent 35rem),
+    radial-gradient(ellipse at 84% 22%, rgba(var(--theme-rgb), .14), transparent 32rem),
+    radial-gradient(ellipse at 40% 88%, rgba(63, 177, 190, .12), transparent 38rem),
+    linear-gradient(135deg, #f3f4fc, #eef3fa 55%, #f5f4fa);
+}
+.sf-app.light .welcome-atmosphere::before { opacity: .42; }
+.sf-app.light .welcome-atmosphere::after { opacity: .3; }
+.sf-app.light .space-planet { opacity: .11; }
+.sf-app.light .topbar, .sf-app.light .sidebar { backdrop-filter: blur(20px); }
 .sf-app .content > * { animation: dashboardEnter .48s both; }
 .sf-app .content > *:nth-child(2) { animation-delay: .045s; }
 .sf-app .content > *:nth-child(3) { animation-delay: .09s; }
@@ -550,7 +594,11 @@ button, input, select, textarea { font-family: inherit; }
 @keyframes progressShine { 0%, 52%, 100% { transform: translateX(-110%); } 82% { transform: translateX(110%); } }
 .sf-app.light {
   color-scheme: light;
-  background: #f5f5f8;
+  background:
+    radial-gradient(ellipse at 18% 12%, rgba(113, 126, 219, .2), transparent 35rem),
+    radial-gradient(ellipse at 84% 22%, rgba(var(--theme-rgb), .14), transparent 32rem),
+    radial-gradient(ellipse at 40% 88%, rgba(63, 177, 190, .12), transparent 38rem),
+    linear-gradient(135deg, #f3f4fc, #eef3fa 55%, #f5f4fa);
 }
 .topbar {
   height: 76px;
@@ -601,8 +649,9 @@ button, input, select, textarea { font-family: inherit; }
 .panel {
   border-color: var(--sf-border);
   border-radius: 20px;
-  background: linear-gradient(145deg, rgba(21, 24, 37, .92), rgba(14, 16, 26, .88));
+  background: linear-gradient(145deg, rgba(21, 24, 42, .84), rgba(12, 15, 29, .78));
   box-shadow: 0 18px 55px rgba(0, 0, 0, .16);
+  backdrop-filter: blur(12px);
 }
 .stats .panel {
   position: relative;
@@ -682,22 +731,30 @@ input:focus, select:focus, textarea:focus {
   inset: 0;
   overflow: hidden;
   pointer-events: none;
+  background:
+    radial-gradient(ellipse at 73% 31%, rgba(var(--theme-rgb), .1), transparent 34rem),
+    radial-gradient(ellipse at 25% 82%, rgba(38, 163, 175, .08), transparent 30rem);
 }
 .welcome-atmosphere::before {
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(1px 1px at 8% 19%, rgba(255,255,255,.72) 50%, transparent 100%),
-    radial-gradient(1px 1px at 17% 72%, rgba(196,181,253,.74) 50%, transparent 100%),
-    radial-gradient(1px 1px at 32% 11%, rgba(255,255,255,.58) 50%, transparent 100%),
-    radial-gradient(1px 1px at 61% 17%, rgba(103,232,210,.72) 50%, transparent 100%),
-    radial-gradient(1px 1px at 89% 25%, rgba(255,255,255,.7) 50%, transparent 100%),
-    radial-gradient(1px 1px at 95% 71%, rgba(196,181,253,.7) 50%, transparent 100%),
-    radial-gradient(1px 1px at 49% 88%, rgba(255,255,255,.5) 50%, transparent 100%);
-  background-size: 420px 360px;
+    radial-gradient(1.5px 1.5px at 8% 19%, rgba(255,255,255,.9) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 17% 72%, rgba(196,181,253,.92) 50%, transparent 100%),
+    radial-gradient(1px 1px at 32% 11%, rgba(255,255,255,.82) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 61% 17%, rgba(103,232,210,.9) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 89% 25%, rgba(255,255,255,.9) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 95% 71%, rgba(196,181,253,.88) 50%, transparent 100%),
+    radial-gradient(1px 1px at 49% 88%, rgba(255,255,255,.76) 50%, transparent 100%),
+    radial-gradient(1px 1px at 20px 36px, rgba(255,255,255,.62) 50%, transparent 100%),
+    radial-gradient(1px 1px at 84px 112px, rgba(161,190,255,.68) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 146px 78px, rgba(255,255,255,.76) 50%, transparent 100%),
+    radial-gradient(1px 1px at 202px 164px, rgba(103,232,210,.68) 50%, transparent 100%),
+    radial-gradient(1px 1px at 250px 42px, rgba(255,255,255,.58) 50%, transparent 100%);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 280px 220px, 340px 280px, 390px 320px, 460px 360px, 520px 420px;
   content: "";
-  opacity: .48;
-  animation: starTwinkle 4.5s ease-in-out infinite alternate;
+  opacity: .76;
+  animation: starTwinkle 5.5s ease-in-out infinite alternate;
 }
 .welcome-atmosphere::after {
   position: absolute;
@@ -705,7 +762,7 @@ input:focus, select:focus, textarea:focus {
   bottom: 0;
   left: -35%;
   width: 24%;
-  background: linear-gradient(90deg, transparent, rgba(var(--theme-rgb), .045), transparent);
+  background: linear-gradient(90deg, transparent, rgba(var(--theme-rgb), .11), transparent);
   content: "";
   transform: skewX(-18deg);
   animation: ambientSweep 15s 2s ease-in-out infinite;
@@ -735,7 +792,7 @@ input:focus, select:focus, textarea:focus {
   left: 50%;
   width: min(62vw, 760px);
   aspect-ratio: 1;
-  border: 1px solid rgba(var(--theme-rgb), .14);
+  border: 1px solid rgba(var(--theme-rgb), .28);
   border-radius: 50%;
   transform: translate(-50%, -50%) rotate(-24deg) scaleY(.32);
   animation: orbitPulse 7s ease-in-out infinite alternate;
@@ -758,7 +815,7 @@ input:focus, select:focus, textarea:focus {
   right: -220px;
   width: min(62vw, 760px);
   aspect-ratio: 1;
-  border: 1px solid rgba(var(--theme-rgb), .075);
+  border: 1px solid rgba(var(--theme-rgb), .16);
   border-radius: 50%;
   transform: translateY(-50%);
   animation: orbitTurn 32s linear infinite;
@@ -766,19 +823,55 @@ input:focus, select:focus, textarea:focus {
 .welcome-atmosphere-orbit::before, .welcome-atmosphere-orbit::after {
   position: absolute;
   inset: 9%;
-  border: 1px solid rgba(255,255,255,.035);
+  border: 1px solid rgba(255,255,255,.08);
   border-radius: 50%;
   content: "";
 }
-.welcome-atmosphere-orbit::after { inset: 21%; border-color: rgba(var(--theme-rgb), .055); }
+.welcome-atmosphere-orbit::after { inset: 21%; border-color: rgba(var(--theme-rgb), .13); }
+.space-planet {
+  position: absolute;
+  top: 8%;
+  right: 12%;
+  width: min(24vw, 300px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(218, 226, 255, .22);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 33% 27%, rgba(255, 255, 255, .52), transparent 2%),
+    radial-gradient(ellipse at 34% 30%, rgba(181, 199, 255, .52), transparent 31%),
+    radial-gradient(ellipse at 66% 66%, rgba(8, 14, 38, .92), transparent 62%),
+    radial-gradient(circle at 42% 40%, rgba(var(--theme-rgb), .8), rgba(39, 75, 138, .58) 51%, rgba(12, 18, 43, .9) 72%);
+  box-shadow: inset -24px -18px 42px rgba(2, 4, 16, .62), 0 0 72px rgba(var(--theme-rgb), .24);
+  opacity: .48;
+  animation: planetFloat 17s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.space-planet::before {
+  position: absolute;
+  inset: 23% -38%;
+  border: 1px solid rgba(210, 225, 255, .34);
+  border-radius: 50%;
+  content: "";
+  transform: rotate(-24deg) scaleY(.36);
+  box-shadow: 0 0 18px rgba(var(--theme-rgb), .14);
+}
+.space-planet::after {
+  position: absolute;
+  inset: 31% -30%;
+  border: 1px solid rgba(var(--theme-rgb), .38);
+  border-radius: 50%;
+  content: "";
+  transform: rotate(-24deg) scaleY(.36);
+}
 .auth.theme-violet, .auth.theme-ocean, .auth.theme-rose, .auth.theme-amber {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   background:
-    radial-gradient(ellipse at 78% 43%, var(--theme-glow), transparent 33rem),
-    radial-gradient(ellipse at 16% 88%, rgba(var(--theme-rgb), .07), transparent 27rem),
-    #090b12;
+    radial-gradient(ellipse at 78% 43%, var(--theme-glow), transparent 37rem),
+    radial-gradient(ellipse at 16% 88%, rgba(var(--theme-rgb), .12), transparent 30rem),
+    radial-gradient(ellipse at 35% 8%, rgba(77, 102, 196, .12), transparent 30rem),
+    #080a15;
 }
 .auth::before {
   position: absolute;
@@ -819,8 +912,10 @@ input:focus, select:focus, textarea:focus {
   width: min(28vw, 360px);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: var(--theme-glow);
-  filter: blur(60px);
+  background:
+    radial-gradient(ellipse at 55% 45%, rgba(var(--theme-rgb), .27), transparent 68%),
+    radial-gradient(ellipse at 35% 68%, rgba(49, 174, 190, .14), transparent 70%);
+  filter: blur(48px);
   animation: atmosphereDrift 11s ease-in-out infinite alternate;
 }
 .welcome-preview-float {
@@ -877,8 +972,14 @@ input:focus, select:focus, textarea:focus {
 .dashboard-quote button { flex: 0 0 auto; }
 .theme-violet .dashboard-quote, .theme-ocean .dashboard-quote, .theme-rose .dashboard-quote, .theme-amber .dashboard-quote { --quote-color: var(--theme-primary); }
 @keyframes atmosphereDrift { from { transform: translate3d(-24px, -16px, 0) scale(.9); opacity: .55; } to { transform: translate3d(28px, 20px, 0) scale(1.12); opacity: 1; } }
+@keyframes planetFloat { from { translate: 0 0; } to { translate: -14px 12px; } }
 @keyframes floatBadge { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
 @keyframes starTwinkle { from { opacity: .2; } to { opacity: .78; } }
+@keyframes background-enter {
+  0% { opacity: 0; transform: scale(.84) translate3d(-2%, 1%, 0) rotate(-2deg); }
+  32% { opacity: var(--background-glow-opacity, .78); transform: scale(1) translate3d(0, 0, 0); }
+  100% { opacity: 0; transform: scale(1.16) translate3d(3%, -2%, 0) rotate(2deg); }
+}
 @keyframes orbitTurn { from { rotate: 0deg; } to { rotate: 360deg; } }
 @keyframes orbitPulse { from { scale: .92 1; opacity: .55; } to { scale: 1.08 1; opacity: 1; } }
 @keyframes starTravel {
@@ -1075,10 +1176,10 @@ input:focus, select:focus, textarea:focus {
 }
 .welcome-footer span:last-child { color: #8a8e9d; }
 
-.theme-violet { --theme-primary: #a78bfa; --theme-secondary: #67e8d2; --theme-rgb: 167, 139, 250; --theme-glow: rgba(116, 82, 210, .17); }
-.theme-ocean { --theme-primary: #38bdf8; --theme-secondary: #5eead4; --theme-rgb: 56, 189, 248; --theme-glow: rgba(14, 116, 168, .2); }
-.theme-rose { --theme-primary: #fb7185; --theme-secondary: #c084fc; --theme-rgb: 251, 113, 133; --theme-glow: rgba(190, 46, 106, .18); }
-.theme-amber { --theme-primary: #fbbf24; --theme-secondary: #fb923c; --theme-rgb: 251, 191, 36; --theme-glow: rgba(174, 105, 20, .17); }
+.theme-violet { --theme-primary: #a78bfa; --theme-secondary: #67e8d2; --theme-rgb: 167, 139, 250; --theme-glow: rgba(116, 82, 210, .25); }
+.theme-ocean { --theme-primary: #38bdf8; --theme-secondary: #5eead4; --theme-rgb: 56, 189, 248; --theme-glow: rgba(14, 116, 168, .27); }
+.theme-rose { --theme-primary: #fb7185; --theme-secondary: #c084fc; --theme-rgb: 251, 113, 133; --theme-glow: rgba(190, 46, 106, .25); }
+.theme-amber { --theme-primary: #fbbf24; --theme-secondary: #fb923c; --theme-rgb: 251, 191, 36; --theme-glow: rgba(174, 105, 20, .24); }
 .theme-violet .primary-btn, .theme-ocean .primary-btn, .theme-rose .primary-btn, .theme-amber .primary-btn {
   background: linear-gradient(110deg, var(--theme-primary), var(--theme-secondary));
   box-shadow: 0 9px 25px rgba(var(--theme-rgb), .2);
@@ -1101,9 +1202,10 @@ input:focus, select:focus, textarea:focus {
 .welcome.theme-violet, .welcome.theme-ocean, .welcome.theme-rose, .welcome.theme-amber,
 .theme-violet .welcome, .theme-ocean .welcome, .theme-rose .welcome, .theme-amber .welcome {
   background:
-    radial-gradient(ellipse at 78% 43%, var(--theme-glow), transparent 33rem),
-    radial-gradient(ellipse at 16% 88%, rgba(var(--theme-rgb), .07), transparent 27rem),
-    #090b12;
+    radial-gradient(ellipse at 78% 38%, var(--theme-glow), transparent 37rem),
+    radial-gradient(ellipse at 16% 88%, rgba(var(--theme-rgb), .12), transparent 30rem),
+    radial-gradient(ellipse at 34% 8%, rgba(77, 102, 196, .12), transparent 30rem),
+    #080a15;
 }
 .welcome-header .theme-picker { z-index: 2; }
 .theme-picker { position: relative; }
@@ -1144,7 +1246,10 @@ input:focus, select:focus, textarea:focus {
 .welcome-brand-mark { background: linear-gradient(145deg, rgba(var(--theme-rgb), .24), rgba(var(--theme-rgb), .08)); color: var(--theme-primary); }
 .welcome-preview {
   border-color: rgba(255,255,255,.16);
-  background: linear-gradient(145deg, rgba(26, 28, 42, .98), rgba(15, 17, 27, .98));
+  background:
+    radial-gradient(ellipse at 88% 4%, rgba(var(--theme-rgb), .11), transparent 45%),
+    linear-gradient(145deg, rgba(26, 28, 42, .9), rgba(15, 17, 27, .86));
+  backdrop-filter: blur(18px);
   box-shadow: 0 30px 80px rgba(0,0,0,.38), 0 0 70px rgba(var(--theme-rgb), .09);
   transform: none;
   animation: none;
@@ -1378,6 +1483,7 @@ body { font-size: 15px; line-height: 1.6; }
 }
 @media(prefers-reduced-motion: reduce) {
   .content-view { animation: none; }
+  .background-transition { animation: none; }
   .item, .dashboard-stat-card, .note-card, .flashcard, .check, .task-title {
     transition-duration: .01ms;
     animation-duration: .01ms;
@@ -1433,11 +1539,13 @@ function ThemePicker({ theme, setTheme, menuId }) {
   );
 }
 
-function Atmosphere() {
+function Atmosphere({ transitionKey }) {
   return (
     <div className="welcome-atmosphere" aria-hidden="true">
+      {transitionKey !== undefined && <span className="background-transition" key={transitionKey} />}
       <span className="welcome-atmosphere-orbit" />
       <span className="welcome-atmosphere-glow" />
+      <span className="space-planet" />
       <span className="welcome-star-orbit" />
       <span className="welcome-star welcome-star-one" />
       <span className="welcome-star welcome-star-two" />
@@ -1466,7 +1574,7 @@ function Layout({ children, page, navigate, dark, setDark, syncStatus, retrySync
 
   return (
     <div className={`sf-app theme-${theme} ${!dark ? "light" : ""}`}>
-      <Atmosphere />
+      <Atmosphere transitionKey={page} />
       <header className="topbar">
         <button className="ghost-btn brand" onClick={() => navigate("dashboard")}>
           ✦ Study<span>Flow</span>
@@ -1834,6 +1942,7 @@ function StudentSetup({ profile, onContinue, theme }) {
 
   return (
     <div className={`auth theme-${theme}`}>
+      <Atmosphere />
       <div className="panel auth-card">
         <div className="eyebrow">YOUR PRIVATE STUDY SPACE</div>
         <h1>First, a little about you.</h1>
@@ -1874,9 +1983,16 @@ function Dashboard({
   preferences,
   setPreferences,
 }) {
+  const [timeGreeting, setTimeGreeting] = useState(getIndiaTimeGreeting);
   const [quoteIndex, setQuoteIndex] = useState(() => new Date().getDate() % motivationalQuotes.length);
   const completed = tasks.filter((task) => task.done).length;
   const pending = tasks.filter((task) => !task.done).length;
+
+  useEffect(() => {
+    const updateGreeting = () => setTimeGreeting(getIndiaTimeGreeting());
+    const intervalId = window.setInterval(updateGreeting, 60_000);
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   const todayMinutes = studySessions
     .filter((session) => session.date === getTodayKey())
@@ -1959,7 +2075,7 @@ function Dashboard({
     <>
       <div className="page-head">
         <div>
-          <div className="eyebrow">Good morning</div>
+          <div className="eyebrow">{timeGreeting}</div>
           <h1 className="title">{profile.name || "Student"}'s command center</h1>
           <div className="muted">{profile.course ? profile.course : "Your personalized study workspace"}</div>
         </div>

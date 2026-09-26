@@ -1,10 +1,7 @@
 import { useState } from "react";
 
-function Profile({ user, onLogout }) {
+function Profile({ user }) {
   const [name, setName] = useState(user?.name || "Student");
-  const [email, setEmail] = useState(
-    user?.email || "student@example.com"
-  );
 
   const [editing, setEditing] = useState(false);
 
@@ -60,23 +57,6 @@ function Profile({ user, onLogout }) {
           </p>
         </div>
 
-        {onLogout && (
-          <button
-            onClick={onLogout}
-            style={{
-              border: "none",
-              borderRadius: "14px",
-              padding: "12px 20px",
-              background: "#ffffffaa",
-              color: "#315b78",
-              fontWeight: "700",
-              cursor: "pointer",
-              boxShadow: "0 8px 25px rgba(80, 150, 190, 0.15)",
-            }}
-          >
-            Logout
-          </button>
-        )}
       </div>
 
       {/* Main profile card */}
@@ -252,34 +232,6 @@ function Profile({ user, onLogout }) {
               />
             </div>
 
-            <div style={{ marginTop: "17px" }}>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: "7px",
-                  fontWeight: "700",
-                  fontSize: "14px",
-                }}
-              >
-                Email
-              </label>
-
-              <input
-                value={email}
-                disabled={!editing}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{
-                  width: "100%",
-                  boxSizing: "border-box",
-                  padding: "13px",
-                  borderRadius: "13px",
-                  border: "1px solid #c9e5f3",
-                  background: editing ? "#ffffff" : "#eef9ff",
-                  outline: "none",
-                  fontSize: "15px",
-                }}
-              />
-            </div>
           </div>
 
           {/* Study statistics */}

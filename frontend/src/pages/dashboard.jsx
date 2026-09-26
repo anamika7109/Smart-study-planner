@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
-function Dashboard({ user, navigate, onLogout }) {
+function Dashboard({ user, navigate }) {
   const [aiQuestion, setAiQuestion] = useState("");
   const [aiAnswer, setAiAnswer] = useState("");
 
@@ -62,9 +62,6 @@ function Dashboard({ user, navigate, onLogout }) {
             </div>
           </div>
 
-          <button className="logout-button" onClick={onLogout}>
-            <span>↪</span> Log Out
-          </button>
         </div>
       </aside>
 
@@ -441,19 +438,6 @@ function Dashboard({ user, navigate, onLogout }) {
           font-size: 10px;
           line-height: 1.4;
         }
-
-        .logout-button {
-          width: 100%;
-          border: 1px solid rgba(95, 164, 197, 0.2);
-          border-radius: 14px;
-          padding: 12px;
-          background: rgba(255,255,255,0.45);
-          color: #688b9d;
-          cursor: pointer;
-          font-weight: 600;
-        }
-
-        .logout-button span { margin-right: 8px; }
 
         .dashboard-main {
           width: calc(100% - 255px);
