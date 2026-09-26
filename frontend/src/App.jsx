@@ -261,10 +261,20 @@ h1, h2, h3, h4, .brand, .stat-value, .card-title, .timer-face, .goal-number, .pr
 .bar { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #7c5cff, #22d3ee); transition: width .4s ease; }
 .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .list { display: grid; gap: 10px; }
-.item { padding: 13px; border: 1px solid #252d45; border-radius: 14px; background: rgba(255,255,255,.025); }
+.item { padding: 13px; border: 1px solid #252d45; border-radius: 14px; background: rgba(255,255,255,.025); transition: transform .2s ease, border-color .2s ease, background-color .2s ease, box-shadow .2s ease; }
+.item:hover { transform: translateY(-1px); border-color: rgba(167,139,250,.32); }
+.content-view { animation: page-enter .32s cubic-bezier(.2,.75,.25,1) both; }
+.dashboard-stat-card, .note-card, .flashcard { transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, background-color .2s ease; }
+.dashboard-stat-card:hover, .note-card:hover, .flashcard:hover { transform: translateY(-3px); border-color: rgba(167,139,250,.48); box-shadow: 0 16px 36px rgba(0,0,0,.22); }
+.dashboard-stat-card:active, .note-card:active, .flashcard:active { transform: translateY(-1px) scale(.99); }
 
 .check { width: 23px; height: 23px; border-radius: 7px; border: 1px solid #414b67; background: transparent; color: #fff; flex-shrink: 0; }
 .check.done { background: #34d399; border-color: #34d399; }
+.check.just-completed { animation: task-check .3s cubic-bezier(.2,.8,.2,1); }
+.check:active { transform: scale(.9); }
+.task-title { transition: opacity .2s ease, color .2s ease; }
+.task-row.is-complete { background: rgba(52,211,153,.055); border-color: rgba(52,211,153,.24); }
+.task-row.is-complete .task-title { opacity: .62; color: #b7c6c1; }
 .tag { font-size: 11px; padding: 5px 8px; border-radius: 99px; background: #20273b; color: #aeb8cf; white-space: nowrap; }
 .high { color: #ff9aa9; background: rgba(255,90,120,.1); }
 .medium { color: #ffd58a; background: rgba(255,200,70,.1); }
@@ -352,6 +362,15 @@ input:focus, select:focus, textarea:focus { border-color: #7c5cff; box-shadow: 0
 .quiz-option:hover { border-color: #7c5cff; }
 
 @keyframes pulse { 50% { transform: scale(1.08); opacity: .8; } }
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes task-check {
+  0% { transform: scale(.72); }
+  65% { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
 
 @media(max-width: 980px) {
   .sidebar { display: none; }
@@ -1357,6 +1376,13 @@ body { font-size: 15px; line-height: 1.6; }
   .dashboard-quote-text { font-size: 14px; }
   .welcome-footer { font-size: 11px; }
 }
+@media(prefers-reduced-motion: reduce) {
+  .content-view { animation: none; }
+  .item, .dashboard-stat-card, .note-card, .flashcard, .check, .task-title {
+    transition-duration: .01ms;
+    animation-duration: .01ms;
+  }
+}
 `;
 
 /* -----------------------------------------------------------
@@ -1492,7 +1518,7 @@ function Layout({ children, page, navigate, dark, setDark, syncStatus, retrySync
           </button>
         </aside>
 
-        <main className="content">{children}</main>
+        <main className="content"><div className="content-view" key={page}>{children}</div></main>
       </div>
 
       <div className="mobile-nav">
@@ -2298,6 +2324,7 @@ function Tasks({ tasks, setTasks, subjects, notify }) {
   const [priority, setPriority] = useState("Medium");
   const [filter, setFilter] = useState("all");
   const [subjectFilter, setSubjectFilter] = useState("all");
+  const [animatingTaskId, setAnimatingTaskId] = useState(null);
 
   const addTask = (e) => {
     e.preventDefault();
@@ -2336,6 +2363,8 @@ function Tasks({ tasks, setTasks, subjects, notify }) {
   };
 
   const toggleTask = (id) => {
+    const task = tasks.find((item) => item.id === id);
+    setAnimatingTaskId(task && !task.done ? id : null);
     setTasks((current) =>
       current.map((task) =>
         task.id === id
@@ -2472,13 +2501,13 @@ function Tasks({ tasks, setTasks, subjects, notify }) {
               const priority = getPriorityInfo(task.priority);
 
               return (
-                <div className="item row" key={task.id}>
+                <div className={"item row task-row " + (task.done ? "is-complete" : "")} key={task.id}>
                   <div className="row" style={{ justifyContent: "flex-start", alignItems: "flex-start" }}>
-                    <button className={"check " + (task.done ? "done" : "")} onClick={() => toggleTask(task.id)}>
+                    <button type="button" className={"check " + (task.done ? "done " + (animatingTaskId === task.id ? "just-completed" : "") : "")} aria-label={task.done ? `Mark ${task.title} incomplete` : `Mark ${task.title} complete`} onClick={() => toggleTask(task.id)} onAnimationEnd={() => setAnimatingTaskId(null)}>
                       {task.done ? "✓" : ""}
                     </button>
                     <div>
-                      <b style={{ textDecoration: task.done ? "line-through" : "none", opacity: task.done ? 0.6 : 1 }}>
+                      <b className="task-title" style={{ textDecoration: task.done ? "line-through" : "none" }}>
                         {task.title}
                       </b>
                       <div className="task-meta">
