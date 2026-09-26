@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const path = require("path");
 
 dotenv.config();
 
@@ -159,7 +160,6 @@ app.post("/api/ai", async (req, res) => {
     const data = await response.json();
 
     if (!response.ok) {
-      // Safe logging to avoid logging credentials
       console.error("Gemini API Error:", data?.error?.message || "Unknown API error");
       return res.status(502).json({
         success: false,
@@ -285,6 +285,16 @@ app.delete("/api/notes/:id", async (req, res) => {
       error: "Failed to delete note.",
     });
   }
+});
+
+// --------------------------------------------------
+// Serve React Frontend (Static Files)
+// --------------------------------------------------
+
+app.use(express.static(path.join(__dirname, "../../dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../dist/index.html"));
 });
 
 // --------------------------------------------------
