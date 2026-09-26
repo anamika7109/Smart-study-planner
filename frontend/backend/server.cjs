@@ -674,7 +674,7 @@ app.post("/api/ai/quiz", requireAuth, async (req, res) => {
       });
     }
 
-    const finalPrompt = `Create exactly 5 multiple-choice study questions about "${topic.trim()}". Use the student's context when relevant: ${JSON.stringify(context || {})}. Questions should test understanding, use four distinct plausible answer options, and have exactly one correct answer. Return only JSON matching the requested schema.`;
+    const finalPrompt = `Create exactly 5 concise multiple-choice study questions about "${topic.trim()}". Use the student's context when relevant: ${JSON.stringify(context || {})}. Each question must have exactly four distinct options, one correct answer as an integer index from 0 to 3, and a brief explanation. Return only compact JSON with this shape: {"questions":[{"question":"...","options":["...","...","...","..."],"answer":0,"explanation":"..."}]}. Do not include markdown or other text.`;
     const url =
       "https://generativelanguage.googleapis.com/v1beta/models/" +
       encodeURIComponent(GEMINI_MODEL) +
@@ -687,28 +687,9 @@ app.post("/api/ai/quiz", requireAuth, async (req, res) => {
       body: JSON.stringify({
         contents: [{ parts: [{ text: finalPrompt }] }],
         generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 2500,
+          temperature: 0.4,
+          maxOutputTokens: 1400,
           responseMimeType: "application/json",
-          responseSchema: {
-            type: "OBJECT",
-            properties: {
-              questions: {
-                type: "ARRAY",
-                items: {
-                  type: "OBJECT",
-                  properties: {
-                    question: { type: "STRING" },
-                    options: { type: "ARRAY", items: { type: "STRING" } },
-                    answer: { type: "INTEGER" },
-                    explanation: { type: "STRING" },
-                  },
-                  required: ["question", "options", "answer", "explanation"],
-                },
-              },
-            },
-            required: ["questions"],
-          },
         },
       }),
     });
